@@ -1,0 +1,16 @@
+#include "WiFi.h"
+ 
+void setup()
+{
+  Serial.begin(115200);
+  WiFi.mode(WIFI_MODE_STA);
+  Serial.println(WiFi.macAddress());
+}
+ 
+void loop()
+{
+
+}
+//Se debe conectar la placa receptora a la computadora subir el codigo a la placa ESP32 (115200 baud)
+//Una vez cargado se abre el puerto serial y presiona el botón habilitar en el ESP32
+//La dirección es la última linea que aparece en el monitor serial
