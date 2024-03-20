@@ -1,11 +1,11 @@
 #include <esp_now.h>
 #include <WiFi.h>
 
-//Right motor
+//Motor derecho
 int enableRightMotor=22; 
 int rightMotorPin1=16;
 int rightMotorPin2=17;
-//Left motor
+//Motor izquierdo
 int enableLeftMotor=23;
 int leftMotorPin1=18;
 int leftMotorPin2=19;
@@ -67,23 +67,23 @@ void OnDataRecv(const uint8_t * mac, const uint8_t *incomingData, int len)
 
 void simpleMovements()
 {
-  if (receiverData.yAxisValue <= 75)       //Move car Forward
+  if (receiverData.yAxisValue <= 75)       //Se mueve hacia adelante
   {
     rotateMotor(MAX_MOTOR_SPEED, MAX_MOTOR_SPEED);
   }
-  else if (receiverData.yAxisValue >= 175)   //Move car Backward
+  else if (receiverData.yAxisValue >= 175)   //Se mueve hacia atras
   {
     rotateMotor(-MAX_MOTOR_SPEED, -MAX_MOTOR_SPEED);
   }
-  else if (receiverData.xAxisValue >= 175)  //Move car Right
+  else if (receiverData.xAxisValue >= 175)  //Se mueve a la derecha
   {
     rotateMotor(-MAX_MOTOR_SPEED, MAX_MOTOR_SPEED);
   }
-  else if (receiverData.xAxisValue <= 75)   //Move car Left
+  else if (receiverData.xAxisValue <= 75)   //Se mueve a la izquierda
   {
     rotateMotor(MAX_MOTOR_SPEED, -MAX_MOTOR_SPEED);
   }
-  else                                      //Stop the car
+  else                                      //Se detiene
   {
     rotateMotor(0, 0);
   }   
