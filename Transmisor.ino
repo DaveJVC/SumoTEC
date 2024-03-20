@@ -1,22 +1,18 @@
 #include <esp_now.h>
 #include <WiFi.h>
 
-// Se reemplaza por la dirección obtenida del ESP32 receptor
+#define X_AXIS_PIN 32
+#define Y_AXIS_PIN 33
+#define SWITCH_PIN 25
+
+// Se reemplaza por la dirección WIFI del ESP32 receptor
 uint8_t receiverMacAddress[] = {0xAC,0x67,0xB2,0x36,0x7F,0x28};  //AC:67:B2:36:7F:28
 
 struct PacketData
 {
-  //Joysticks
-  byte lxAxisValue;
-  byte lyAxisValue;
-  byte rxAxisValue;
-  byte ryAxisValue;
-
- //Botones en caso de ser necesario
-  //byte switch1Value;
-  //byte switch2Value;
-  //byte switch3Value;
-  //byte switch4Value;   
+  byte xAxisValue;
+  byte yAxisValue;
+  byte switchPressed;
 };
 PacketData data;
 
@@ -32,7 +28,7 @@ int mapAndAdjustJoystickDeadBandValues(int value, bool reverse)
   }
   else if (value <= 1800)
   {
-    value = (value == 0 ? 0 : map(value, 1800, 0, 127, 0));  
+    value = map(value, 1800, 0, 127, 0);  
   }
   else
   {
@@ -43,7 +39,6 @@ int mapAndAdjustJoystickDeadBandValues(int value, bool reverse)
   {
     value = 254 - value;
   }
-  Serial.println(value);  
   return value;
 }
 
@@ -57,6 +52,7 @@ void OnDataSent(const uint8_t *mac_addr, esp_now_send_status_t status)
 
 void setup() 
 {
+  
   Serial.begin(115200);
   WiFi.mode(WIFI_STA);
 
@@ -90,27 +86,21 @@ void setup()
     Serial.println("Succes: Added peer");
   } 
 
-  //pinMode(15,INPUT_PULLUP);
-  //pinMode(16,INPUT_PULLUP);
-  //pinMode(17,INPUT_PULLUP);
-  //pinMode(18,INPUT_PULLUP); 
-     
+  pinMode(SWITCH_PIN, INPUT_PULLUP);   
 }
  
 void loop() 
 {
-  //lee los valores de los joysticks
-  data.lxAxisValue    = mapAndAdjustJoystickDeadBandValues(analogRead(32), false);
-  data.lyAxisValue    = mapAndAdjustJoystickDeadBandValues(analogRead(33), false);
-  data.rxAxisValue    = mapAndAdjustJoystickDeadBandValues(analogRead(34), false);
-  data.ryAxisValue    = mapAndAdjustJoystickDeadBandValues(analogRead(35), false);
-  
-  //data.switch1Value   = !digitalRead(15);
-  //data.switch2Value   = !digitalRead(16);
-  //data.switch3Value   = !digitalRead(17);
-  //data.switch4Value   = !digitalRead(18);
+  //Lee los valores del Joystick y botones
+  data.xAxisValue = mapAndAdjustJoystickDeadBandValues(analogRead(X_AXIS_PIN), false);
+  data.yAxisValue = mapAndAdjustJoystickDeadBandValues(analogRead(Y_AXIS_PIN), false);  
+  data.switchPressed = false; 
 
-  //Se envían los datos
+  if (digitalRead(SWITCH_PIN) == LOW)
+  {
+    data.switchPressed = true;
+  }
+  
   esp_err_t result = esp_now_send(receiverMacAddress, (uint8_t *) &data, sizeof(data));
   if (result == ESP_OK) 
   {
@@ -121,5 +111,12 @@ void loop()
     Serial.println("Error sending the data");
   }    
   
-  delay(50);
+  if (data.switchPressed == true)
+  {
+    delay(500);
+  }
+  else
+  {
+    delay(50);
+  }
 }
