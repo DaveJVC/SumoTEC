@@ -3,7 +3,7 @@
 
 #define X_AXIS_PIN 32
 #define Y_AXIS_PIN 33
-#define SWITCH_PIN 25
+#define SWITCH_PIN 25 //El botón del joystick cambia el modo de operación (Forma en que aceleran los motores)
 
 // Se reemplaza por la dirección WIFI del ESP32 receptor
 uint8_t receiverMacAddress[] = {0xAC,0x67,0xB2,0x36,0x7F,0x28};  //AC:67:B2:36:7F:28
