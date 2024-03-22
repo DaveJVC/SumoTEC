@@ -1,109 +1,94 @@
-//Code by Reichenstein7 (thejamerson.com)
+// //Right motor
+// int enableRightMotor=23; 
+// int rightMotorPin1=22;
+// int rightMotorPin2=1;
+// //Left motor
+// int enableLeftMotor=19;
+// int leftMotorPin1=3;
+// int leftMotorPin2=21;
 
-//Keyboard Controls:
-//
-// 1 -Motor 1 Left
-// 2 -Motor 1 Stop
-// 3 -Motor 1 Right
-//
-// 4 -Motor 2 Left
-// 5 -Motor 2 Stop
-// 6 -Motor 2 Right
+//Right motor
+int enableRightMotor=22; 
+int rightMotorPin1=2;
+int rightMotorPin2=4;
+//Left motor
+int enableLeftMotor=23;
+int leftMotorPin1=18;
+int leftMotorPin2=19;
 
-// Declare L298N Dual H-Bridge Motor Controller directly since there is not a library to load.
+#define MAX_MOTOR_SPEED 255
 
-// Motor 1
-int dir1PinA = 2;
-int dir2PinA = 3;
-int speedPinA = 9; // Needs to be a PWM pin to be able to control motor speed
+const int PWMFreq = 1000; /* 1 KHz */
+const int PWMResolution = 8;
+const int rightMotorPWMSpeedChannel = 4;
+const int leftMotorPWMSpeedChannel = 5;
 
-// Motor 2
-int dir1PinB = 4;
-int dir2PinB = 5;
-int speedPinB = 10; // Needs to be a PWM pin to be able to control motor speed
 
-void setup() {  // Setup runs once per reset
-  // initialize serial communication @ 9600 baud:
-  Serial.begin(9600);
+void setUpPinModes()
+{
+  pinMode(enableRightMotor,OUTPUT);
+  pinMode(rightMotorPin1,OUTPUT);
+  pinMode(rightMotorPin2,OUTPUT);
+  
+  pinMode(enableLeftMotor,OUTPUT);
+  pinMode(leftMotorPin1,OUTPUT);
+  pinMode(leftMotorPin2,OUTPUT);
 
-  //Define L298N Dual H-Bridge Motor Controller Pins
-
-  pinMode(dir1PinA,OUTPUT);
-  pinMode(dir2PinA,OUTPUT);
-  pinMode(speedPinA,OUTPUT);
-  pinMode(dir1PinB,OUTPUT);
-  pinMode(dir2PinB,OUTPUT);
-  pinMode(speedPinB,OUTPUT);
-
+  //Set up PWM for motor speed
+  ledcSetup(rightMotorPWMSpeedChannel, PWMFreq, PWMResolution);
+  ledcSetup(leftMotorPWMSpeedChannel, PWMFreq, PWMResolution);  
+  ledcAttachPin(enableRightMotor, rightMotorPWMSpeedChannel);
+  ledcAttachPin(enableLeftMotor, leftMotorPWMSpeedChannel); 
+  
+  rotateMotor(0, 0);
 }
 
-void loop() {
+void setup() 
+{
+  setUpPinModes();
+  
+  Serial.begin(115200);
+}
+ 
+void loop() 
+{
+  rotateMotor(MAX_MOTOR_SPEED, MAX_MOTOR_SPEED);
+}
 
-  // Initialize the Serial interface:
-
-  if (Serial.available() > 0) {
-    int inByte = Serial.read();
-    int speed; // Local variable
-
-    switch (inByte) {
-
-      //______________Motor 1______________
-
-      case '1': // Motor 1 Forward
-      analogWrite(speedPinA, 255);//Sets speed variable via PWM 
-      digitalWrite(dir1PinA, LOW);
-      digitalWrite(dir2PinA, HIGH);
-      Serial.println("Motor 1 Forward"); // Prints out “Motor 1 Forward” on the serial monitor
-      Serial.println("   "); // Creates a blank line printed on the serial monitor
-      break;
-
-      case '2': // Motor 1 Stop (Freespin)
-      analogWrite(speedPinA, 0);
-      digitalWrite(dir1PinA, LOW);
-      digitalWrite(dir2PinA, HIGH);
-      Serial.println("Motor 1 Stop");
-      Serial.println("   ");
-      break;
-
-      case '3': // Motor 1 Reverse
-      analogWrite(speedPinA, 255);
-      digitalWrite(dir1PinA, HIGH);
-      digitalWrite(dir2PinA, LOW);
-      Serial.println("Motor 1 Reverse");
-      Serial.println("   ");
-      break;
-
-      //______________Motor 2______________
-
-      case '4': // Motor 2 Forward
-      analogWrite(speedPinB, 255);
-      digitalWrite(dir1PinB, LOW);
-      digitalWrite(dir2PinB, HIGH);
-      Serial.println("Motor 2 Forward");
-      Serial.println("   ");
-      break;
-
-      case '5': // Motor 1 Stop (Freespin)
-      analogWrite(speedPinB, 0);
-      digitalWrite(dir1PinB, LOW);
-      digitalWrite(dir2PinB, HIGH);
-      Serial.println("Motor 2 Stop");
-      Serial.println("   ");
-      break;
-
-      case '6': // Motor 2 Reverse
-      analogWrite(speedPinB, 255);
-      digitalWrite(dir1PinB, HIGH);
-      digitalWrite(dir2PinB, LOW);
-      Serial.println("Motor 2 Reverse");
-      Serial.println("   ");
-      break;
-
-      default:
-      // turn all the connections off if an unmapped key is pressed:
-      for (int thisPin = 2; thisPin < 11; thisPin++) {
-      digitalWrite(thisPin, LOW);
-      }
-    }
+void rotateMotor(int rightMotorSpeed, int leftMotorSpeed)
+{
+  if (rightMotorSpeed < 0)
+  {
+    digitalWrite(rightMotorPin1,LOW);
+    digitalWrite(rightMotorPin2,HIGH);    
   }
+  else if (rightMotorSpeed > 0)
+  {
+    digitalWrite(rightMotorPin1,HIGH);
+    digitalWrite(rightMotorPin2,LOW);      
+  }
+  else
+  {
+    digitalWrite(rightMotorPin1,LOW);
+    digitalWrite(rightMotorPin2,LOW);      
+  }
+  
+  if (leftMotorSpeed < 0)
+  {
+    digitalWrite(leftMotorPin1,LOW);
+    digitalWrite(leftMotorPin2,HIGH);    
+  }
+  else if (leftMotorSpeed > 0)
+  {
+    digitalWrite(leftMotorPin1,HIGH);
+    digitalWrite(leftMotorPin2,LOW);      
+  }
+  else
+  {
+    digitalWrite(leftMotorPin1,LOW);
+    digitalWrite(leftMotorPin2,LOW);      
+  } 
+
+  ledcWrite(rightMotorPWMSpeedChannel, abs(rightMotorSpeed));
+  ledcWrite(leftMotorPWMSpeedChannel, abs(leftMotorSpeed));    
 }

@@ -13,49 +13,54 @@
 #define pinBateria 13
 #define pinRojo 12
 #define pinVerde 14
-#define pinAzul 27
 
 const int canalPWMRojo = 0;   // Canal PWM 0 para rojo
 const int canalPWMVerde = 1;  // Canal PWM 1 para verde
-const int canalPWMAzul = 2;   // Ccanal PWM 2 para azul
 
 void setup() {
-  //Seria.begin(115200);      // Para debugging
+  Serial.begin(115200);      // Para debugging
   
-  ledcSetup(canalPWMRojo, 5000, 8);       // Seteo los canales del PWM a 5 kHz y 8 bits de resolución (0-256)
-  ledcSetup(canalPWMVerde, 5000, 8);
-  ledcSetup(canalPWMAzul, 5000, 8);
-  ledcAttachPin(pinRojo, canalPWMRojo);   // Asigno canal PWM 0 a pin rojo
-  ledcAttachPin(pinVerde, canalPWMVerde); // Asigno canal PWM 1 a pin verde
-  ledcAttachPin(pinAzul, canalPWMAzul);   // Asugno canal PWM 2 a pin azul
+  pinMode(pinRojo, OUTPUT);
+  pinMode(pinVerde, OUTPUT);
+  //ledcSetup(canalPWMRojo, 5000, 8);       // Seteo los canales del PWM a 5 kHz y 8 bits de resolución (0-256)
+  //ledcSetup(canalPWMVerde, 5000, 8);
+  //ledcAttachPin(pinRojo, canalPWMRojo);   // Asigno canal PWM 0 a pin rojo
+  //ledcAttachPin(pinVerde, canalPWMVerde); // Asigno canal PWM 1 a pin verde
 }
 
 void loop() {
   long nivelBateria = leerBateria();
 
-  //Serial.print(nivelBateria); Serial.println(" %"); // Para debugging
+  Serial.print(nivelBateria); Serial.println(" %"); // Para debugging
+  delay(2000);
 
   if(nivelBateria > 0.0) {    // Si el nivel de batería fuera a bajar de 0, el programa no continuará
     if(nivelBateria < 15) {
-        colorLED(255, 0, 0);  // Color rojo, significa que la batería bajó del 15%
+      digitalWrite(pinRojo, LOW);
+      digitalWrite(pinVerde, HIGH);
+      //colorLED(255, 0);  // Color rojo, significa que la batería bajó del 15%
     }
     else if(nivelBateria < 50) {
-      colorLED(255, 255, 0);  // Color amarillo, significa que la batería bajó del 50%
+      digitalWrite(pinRojo, LOW);
+      digitalWrite(pinVerde, LOW);
+      //colorLED(255, 255);  // Color amarillo, significa que la batería bajó del 50%
     }
     else {
-      colorLED(0, 255, 0);    // Color verde, significa que la batería está por encima del 50%
+      digitalWrite(pinRojo, HIGH);
+      digitalWrite(pinVerde, LOW);
+      //colorLED(0, 255);    // Color verde, significa que la batería está por encima del 50%
     }
   }
 }
 
 long leerBateria() {
   int miliVoltsBateria = analogReadMilliVolts(pinBateria);          // Resolucion de 12 bits (0 - 3300 mV)
-  long nivelBateria = map(miliVoltsBateria, 2673, 3300, 0.0, 100.0);
+  //long nivelBateria = map(miliVoltsBateria, 2673, 3300, 0.0, 100.0);
+  long nivelBateria = (miliVoltsBateria-2673.0)/(3300.0 - 2673.0) * 100.0;
   return(nivelBateria);
 }
 
-void colorLED(int rojoDC, int verdeDC, int azulDC) {
+void colorLED(int rojoDC, int verdeDC) {
   ledcWrite(canalPWMRojo, rojoDC);   // Activo PWM en pin rojo con "rojoDC" ciclo de trabajo
   ledcWrite(canalPWMVerde, verdeDC); // Activo PWM en pin verde con "verdeDC" ciclo de trabajo
-  ledcWrite(canalPWMAzul, azulDC);   // Activo PWM en pin azul con "azulDC" ciclo de trabajo
 }
