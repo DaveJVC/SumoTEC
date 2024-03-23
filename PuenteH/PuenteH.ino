@@ -1,20 +1,11 @@
-// //Right motor
-// int enableRightMotor=23; 
-// int rightMotorPin1=22;
-// int rightMotorPin2=1;
-// //Left motor
-// int enableLeftMotor=19;
-// int leftMotorPin1=3;
-// int leftMotorPin2=21;
-
 //Right motor
-int enableRightMotor=22; 
-int rightMotorPin1=2;
-int rightMotorPin2=4;
+int enableRightMotor=4; 
+int rightMotorPin1=5;
+int rightMotorPin2=18;
 //Left motor
-int enableLeftMotor=23;
-int leftMotorPin1=18;
-int leftMotorPin2=19;
+int enableLeftMotor=2;
+int leftMotorPin1=19;
+int leftMotorPin2=21;
 
 #define MAX_MOTOR_SPEED 255
 
@@ -52,7 +43,7 @@ void setup()
  
 void loop() 
 {
-  rotateMotor(MAX_MOTOR_SPEED, MAX_MOTOR_SPEED);
+  rotateMotor(-100, 255);
 }
 
 void rotateMotor(int rightMotorSpeed, int leftMotorSpeed)
