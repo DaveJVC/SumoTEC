@@ -43,7 +43,11 @@ void setup()
  
 void loop() 
 {
-  rotateMotor(-100, 255);
+  delay(5000);
+  rotateMotor(250, 250);
+  delay(10000);
+  rotateMotor(0, 0);
+
 }
 
 void rotateMotor(int rightMotorSpeed, int leftMotorSpeed)

@@ -6,7 +6,7 @@
 #define SWITCH_PIN 25
 
 // REPLACE WITH YOUR RECEIVER MAC Address
-uint8_t receiverMacAddress[] = {0xAC,0x67,0xB2,0x36,0x7F,0x28};  //AC:67:B2:36:7F:28
+uint8_t receiverMacAddress[] = {0x7C,0x9E,0xBD,0x45,0x1C,0xD0};  //7C:9E:BD:45:1C:D0
 
 struct PacketData
 {

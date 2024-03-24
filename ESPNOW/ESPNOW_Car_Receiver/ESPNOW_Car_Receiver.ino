@@ -2,13 +2,13 @@
 #include <WiFi.h>
 
 //Right motor
-int enableRightMotor=22; 
-int rightMotorPin1=16;
-int rightMotorPin2=17;
+int enableRightMotor=4; 
+int rightMotorPin1=5;
+int rightMotorPin2=18;
 //Left motor
-int enableLeftMotor=23;
-int leftMotorPin1=18;
-int leftMotorPin2=19;
+int enableLeftMotor=2;
+int leftMotorPin1=19;
+int leftMotorPin2=21;
 
 #define MAX_MOTOR_SPEED 200
 
